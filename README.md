@@ -2,9 +2,9 @@
 
 The following are based on section `بر اساس مدل تعریف شدcrud پیاده سازی` of Rira-BackEnd-Senior-Task.pdf` file.
 
-## Person Model. Refer to [Person.cs](Server\Common\Rira.BackEnd.SeniorTask.Entity\Person.cs)
+## Person Model. Refer to [Person.cs](Server/Common/Rira.BackEnd.SeniorTask.Entity/Person.cs)
 
-## Using  `Protocol Buffers` to implement. Refer to [person.proto](Protos\person.proto)
+## Using  `Protocol Buffers` to implement. Refer to [person.proto](@Common/Protos/person.proto)
 
 ### I have not used `Protocol Buffers` before, so that i use the following resources :
 
@@ -41,7 +41,7 @@ In Client-Server model, errors are as follows
    
       1. Logic validation error such as `Name is required`. They should be show to user.
       
-         I have implement it, look at the following code in [Person.razor](Client\Rira.BackEnd.SeniorTask.BlazorWebAssembly\Pages) :
+         I have implement it, look at the following code in [Person.razor](Client/Rira.BackEnd.SeniorTask.BlazorWebAssembly/Pages/Person.razor) :
          ```
              <CustomValidation @ref="customValidation" />
              <ValidationSummary />
