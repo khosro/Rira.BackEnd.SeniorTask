@@ -1,0 +1,235 @@
+﻿@page "/"
+@page "/person"
+@using Google.Protobuf.WellKnownTypes
+@using Grpc.Net.Client
+@using Rira.BackEnd.SeniorTask.BlazorWebAssembly.Models
+@using global::Person
+@using static global::Person.PersonService
+
+@inject GrpcChannel GrpcChannel
+
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>
+
+
+<EditForm Model="PersonViewModel" OnValidSubmit="CreateOrUpdate" FormName="CreateOrUpdateForm">
+
+    <CustomValidation @ref="customValidation" />
+    <ValidationSummary />
+
+    <div>
+        <label>
+            Name:
+            <input placeholder="name" @bind="PersonViewModel!.Name" />
+        </label>
+
+        <label>
+            Family Name :
+            <input placeholder="Family Name" @bind="PersonViewModel!.FamilyName" />
+        </label>
+
+        <label>
+            National Code :
+            <input placeholder="National Code" @bind="PersonViewModel!.NationalCode" />
+        </label>
+
+        <label>
+            BirthDay :
+            <input placeholder="BirthDay" @bind="PersonViewModel!.BirthDay" />
+        </label>
+
+        <div style="margin-top:10px">
+            <button disabled="@IsServerActionInProgress" type="submit">@createOrUpdateBtnText</button>
+
+            @if (IsShowClearCreateOrUpdateForm)
+            {
+                <button style="margin-left:10px" @onclick="ClearCreateOrUpdateForm">Clear Form</button>
+            }
+        </div>
+    </div>
+</EditForm>
+
+
+
+<ul style="margin-top:10px">
+    @if (Persons == null || Persons.Any() == false)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Family Name </th>
+                <th>National Code</th>
+                <th>BirthDay</th>
+            </tr>
+
+
+            @foreach (var person in Persons)
+            {
+                <tr>
+                    <td>@person.Name</td>
+                    <td>@person.FamilyName</td>
+                    <td>@person.NationalCode </td>
+                    <td>@person.BirthDay </td>
+                    <td>
+                        <button @onclick="@(() => Edit(person))">Edit</button>
+                    </td>
+                    <td>
+                        <button @onclick="@(() => Delete(person.Id))" disabled="@IsServerActionInProgress">Delete</button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+</ul>
+
+@code {
+
+    bool IsShowClearCreateOrUpdateForm = false;
+
+    bool IsServerActionInProgress = false;
+
+    const string BtnCreateText = "Create";
+
+    string createOrUpdateBtnText = BtnCreateText;
+
+    private CustomValidation? customValidation;
+    Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>();
+
+    [SupplyParameterFromForm]
+    private PersonViewModel PersonViewModel { get; set; } = new PersonViewModel();
+
+    private List<PersonViewModel> Persons = new();
+
+
+    async Task Delete(long id)
+    {
+        var action = async () => await new PersonServiceClient(GrpcChannel).DeleteAsync(new DeletePersonRequest() { Id = id });
+        await ServerAction(action);
+    }
+
+    void Edit(PersonViewModel person)
+    {
+        IsShowClearCreateOrUpdateForm = true;
+        createOrUpdateBtnText = "Update";
+        PersonViewModel = person.Clone();
+    }
+
+    async Task GetAll()
+    {
+        var persons = await new PersonServiceClient(GrpcChannel).GetAllAsync(new Empty());
+        Persons = new List<PersonViewModel>();
+        foreach (var person in persons.Persons)
+        {
+            Persons.Add(new PersonViewModel()
+                {
+                    Id = person.Id,
+                    BirthDay = person.BirthDay,
+                    FamilyName = person.FamilyName,
+                    Name = person.Name,
+                    NationalCode = person.NationalCode
+                });
+        }
+    }
+
+    async Task CreateOrUpdate()
+    {
+        Func<Task<Empty>> action;
+
+        if (PersonViewModel.Id == 0)
+        {
+            action = async () => await new PersonServiceClient(GrpcChannel).CreateAsync(new CreatePersonRequest()
+                {
+                    BirthDay = PersonViewModel.BirthDay,
+                    FamilyName = PersonViewModel!.FamilyName,
+                    Name = PersonViewModel!.Name,
+                    NationalCode = PersonViewModel!.NationalCode
+                });
+        }
+        else
+        {
+            action = async () => await new PersonServiceClient(GrpcChannel).UpdateAsync(new UpdatePersonRequest()
+                {
+                    Id = PersonViewModel.Id,
+                    BirthDay = PersonViewModel.BirthDay,
+                    FamilyName = PersonViewModel!.FamilyName,
+                    Name = PersonViewModel!.Name,
+                    NationalCode = PersonViewModel!.NationalCode
+                });
+        }
+        await ServerAction(action);
+
+    }
+
+    async Task ServerAction<T>(Func<Task<T>> action)
+    {
+        IsServerActionInProgress = true;
+
+        ClearErrors();
+
+        try
+        {
+            await action();
+
+            ClearCreateOrUpdateForm();
+
+            await GetAll();
+        }
+        catch (Grpc.Core.RpcException ex)
+        {
+            errors.Add(Guid.NewGuid().ToString(), new() { ex.Status.Detail });
+            ShowError();
+        }
+        catch (Exception ex)
+        {
+            errors.Add(Guid.NewGuid().ToString(), new() { ex.Message });
+            ShowError();
+        }
+        IsServerActionInProgress = false;
+
+    }
+
+
+    void ClearCreateOrUpdateForm()
+    {
+        IsShowClearCreateOrUpdateForm = false;
+        createOrUpdateBtnText = BtnCreateText;
+        IsServerActionInProgress = false;
+        PersonViewModel = new PersonViewModel();
+    }
+
+    void ClearErrors()
+    {
+        errors.Clear();
+        customValidation?.ClearErrors();
+    }
+
+    void ShowError()
+    {
+        customValidation?.DisplayErrors(errors);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAll();
+    }
+}

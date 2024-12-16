@@ -1,0 +1,51 @@
+
+
+syntax = "proto3";
+package person;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+ service PersonService {
+ 
+   	rpc Create(CreatePersonRequest) returns (google.protobuf.Empty) {}
+
+   	rpc Update(UpdatePersonRequest) returns (google.protobuf.Empty) {}
+   	
+    rpc Delete(DeletePersonRequest) returns (google.protobuf.Empty) {}
+    
+	rpc GetAll (google.protobuf.Empty) returns (PersonReponseListResponse);
+
+}
+
+message DeletePersonRequest {
+		int64  Id = 1;
+}
+
+message CreatePersonRequest {
+	string Name = 1;
+	string FamilyName = 2;
+	string NationalCode = 3;
+	string BirthDay = 4;
+}
+
+message UpdatePersonRequest {
+	int64  Id = 1;
+	string Name = 2;
+	string FamilyName = 3;
+	string NationalCode = 4;
+	string BirthDay = 5;
+}
+
+
+ message PersonReponseListResponse {
+  repeated PersonReponse persons = 1;
+}
+
+message PersonReponse{
+    int64  Id = 1;
+	string Name = 2;
+	string FamilyName = 3;
+	string NationalCode = 4;
+	string BirthDay = 5;
+}

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Rira.BackEnd.SeniorTask.Dtos\Rira.BackEnd.SeniorTask.Dtos.csproj" />
+    <ProjectReference Include="..\..\Common\Rira.BackEnd.SeniorTask.Entity\Rira.BackEnd.SeniorTask.Entity.csproj" />
+  </ItemGroup>
+
+</Project>
