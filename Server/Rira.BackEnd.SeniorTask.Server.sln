@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rira.BackEnd.SeniorTask.gRP
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AC2D601-C681-47EE-8401-D807A02D4371}"
 	ProjectSection(SolutionItems) = preProject
-		..\READE.md = ..\READE.md
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Global
