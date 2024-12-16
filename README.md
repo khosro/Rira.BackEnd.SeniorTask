@@ -4,7 +4,11 @@ The following are based on section `بر اساس مدل تعریف شدcrud پ�
 
 ## Person Model. Refer to [Person.cs](Server/Common/Rira.BackEnd.SeniorTask.Entity/Person.cs)
 
-## Using  `Protocol Buffers` to implement. Refer to [person.proto](@Common/Protos/person.proto)
+## Using  `Protocol Buffers` to implement
+
+[gRPC model](@Common/Protos/person.proto)
+
+[gRPC implementation](Server/Servers/gRPC)
 
 ### I have not used `Protocol Buffers` before, so that i use the following resources :
 
