@@ -2,7 +2,9 @@
 
 The following are based on section `بر اساس مدل تعریف شدcrud پیاده سازی` of `Rira-BackEnd-Senior-Task.pdf` file.
 
-## Person Model. Refer to [Person.cs](Server/Common/Rira.BackEnd.SeniorTask.Entity/Person.cs)
+## Person Model
+
+ [Person.cs](Server/Common/Rira.BackEnd.SeniorTask.Entity/Person.cs)
 
 ## Using  `Protocol Buffers` to implement
 
